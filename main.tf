@@ -19,7 +19,11 @@ provider "aws" {
   region = "eu-central-1"
 }
 
-
+# 1. Спеціальний провайдер для Billing (метрики білінгу існують тільки в us-east-1)
+provider "aws" {
+  alias  = "us_east_1"
+  region = "us-east-1"
+}
 
 # --- DynamoDB Tables ---
 
