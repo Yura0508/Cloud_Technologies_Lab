@@ -5,25 +5,22 @@ const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
 
 exports.handler = async (event) => {
-    const tableName = process.env.TABLE_NAME;
-    const courseId = event.pathParameters?.id || event.id; // Для тестів або API Gateway
-
-    const params = {
-        TableName: tableName,
-        Key: { id: courseId },
+  const id = event.pathParameters?.id;
+  try {
+    const data = await docClient.send(new GetCommand({ 
+      TableName: process.env.TABLE_NAME, 
+      Key: { id } 
+    }));
+    return {
+      statusCode: data.Item ? 200 : 404,
+      headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
+      body: JSON.stringify(data.Item || { error: "Course not found" }),
     };
-
-    try {
-        const data = await docClient.send(new GetCommand(params));
-        if (!data.Item) {
-            return { statusCode: 404, body: JSON.stringify({ message: "Course not found" }) };
-        }
-        return {
-            statusCode: 200,
-            headers: { "Access-Control-Allow-Origin": "*" },
-            body: JSON.stringify(data.Item),
-        };
-    } catch (err) {
-        return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
-    }
+  } catch (err) {
+    return {
+      statusCode: 500,
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify({ error: err.message }),
+    };
+  }
 };

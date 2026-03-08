@@ -5,30 +5,27 @@ const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
 
 exports.handler = async (event) => {
-    const tableName = process.env.TABLE_NAME;
-    const body = JSON.parse(event.body);
+  const body = typeof event.body === "string" ? JSON.parse(event.body) : event;
+  // Генерація ID та посилання як у методичці
+  const id = body.title.replace(/\s+/g, '-').toLowerCase();
+  const course = {
+    ...body,
+    id: id,
+    watchHref: `http://www.pluralsight.com/courses/${id}`
+  };
 
-    const params = {
-        TableName: tableName,
-        Item: {
-            id: body.id,
-            title: body.title,
-            authorId: body.authorId,
-            length: body.length,
-            category: body.category
-        },
+  try {
+    await docClient.send(new PutCommand({ TableName: process.env.TABLE_NAME, Item: course }));
+    return {
+      statusCode: 201,
+      headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
+      body: JSON.stringify(course),
     };
-
-    try {
-        await docClient.send(new PutCommand(params));
-        return {
-            statusCode: 201,
-            body: JSON.stringify({ message: "Course saved successfully!", course: params.Item }),
-        };
-    } catch (err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: err.message }),
-        };
-    }
+  } catch (err) {
+    return {
+      statusCode: 500,
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify({ error: err.message }),
+    };
+  }
 };

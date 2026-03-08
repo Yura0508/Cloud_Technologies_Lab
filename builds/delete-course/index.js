@@ -5,27 +5,22 @@ const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
 
 exports.handler = async (event) => {
-    const tableName = process.env.TABLE_NAME;
-    // В Proxy інтеграції ID приходить у pathParameters
-    const courseId = event.pathParameters?.id || event.id; 
-
-    if (!courseId) {
-        return { statusCode: 400, body: JSON.stringify({ error: "Missing ID" }) };
-    }
-
-    const params = {
-        TableName: tableName,
-        Key: { id: courseId }, // 'id' має бути рядком
+  const id = event.pathParameters?.id;
+  try {
+    await docClient.send(new DeleteCommand({ 
+      TableName: process.env.TABLE_NAME, 
+      Key: { id } 
+    }));
+    return {
+      statusCode: 200,
+      headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "Course deleted successfully", id }),
     };
-
-    try {
-        await docClient.send(new DeleteCommand(params));
-        return {
-            statusCode: 200,
-            headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
-            body: JSON.stringify({ message: "Course deleted successfully", id: courseId }),
-        };
-    } catch (err) {
-        return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
-    }
+  } catch (err) {
+    return {
+      statusCode: 500,
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify({ error: err.message }),
+    };
+  }
 };
