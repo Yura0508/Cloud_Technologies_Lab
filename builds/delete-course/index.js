@@ -6,24 +6,26 @@ const docClient = DynamoDBDocumentClient.from(client);
 
 exports.handler = async (event) => {
     const tableName = process.env.TABLE_NAME;
-    const courseId = event.id || JSON.parse(event.body || "{}").id;
+    // В Proxy інтеграції ID приходить у pathParameters
+    const courseId = event.pathParameters?.id || event.id; 
+
+    if (!courseId) {
+        return { statusCode: 400, body: JSON.stringify({ error: "Missing ID" }) };
+    }
 
     const params = {
         TableName: tableName,
-        Key: { id: courseId },
+        Key: { id: courseId }, // 'id' має бути рядком
     };
 
     try {
         await docClient.send(new DeleteCommand(params));
         return {
             statusCode: 200,
-            headers: { "Access-Control-Allow-Origin": "*" },
+            headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
             body: JSON.stringify({ message: "Course deleted successfully", id: courseId }),
         };
     } catch (err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: err.message }),
-        };
+        return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
     }
 };
