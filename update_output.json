@@ -1,0 +1,1 @@
+{"statusCode":200,"headers":{"Access-Control-Allow-Origin":"*"},"body":"{\"message\":\"Course updated successfully\",\"course\":{\"id\":\"clean-code\",\"title\":\"Clean Code\",\"authorId\":\"robert-martin\",\"length\":\"10:00\",\"category\":\"Software Engineering\"}}"}

@@ -1,0 +1,1 @@
+{"statusCode":201,"body":"{\"message\":\"Course saved successfully!\",\"course\":{\"id\":\"clean-code\",\"title\":\"Clean Code\",\"authorId\":\"robert-martin\",\"length\":\"10:00\",\"category\":\"Software Engineering\"}}"}
