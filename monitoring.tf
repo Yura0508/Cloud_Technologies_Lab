@@ -13,14 +13,14 @@ resource "aws_sns_topic" "billing_alerts_us_east_1" {
 resource "aws_sns_topic_subscription" "email_alert" {
   topic_arn = aws_sns_topic.alerts.arn
   protocol  = "email"
-  endpoint  = "urijkisil2007@gmail.com"
+  endpoint  = "@gmail.com"   # email
 }
 
 resource "aws_sns_topic_subscription" "billing_email_alert" {
   provider  = aws.us_east_1
   topic_arn = aws_sns_topic.billing_alerts_us_east_1.arn
   protocol  = "email"
-  endpoint  = "urijkisil2007@gmail.com"
+  endpoint  = "@gmail.com"  # email
 }
 
 # 4. Явне створення Log Group
