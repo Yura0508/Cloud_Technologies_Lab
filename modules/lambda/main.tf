@@ -29,3 +29,22 @@ resource "aws_lambda_function" "this" {
 
   tags = module.this.tags
 }
+
+
+locals {
+  lambda_roles = [
+    "univ-lab1-get-all-courses",
+    "univ-lab1-save-course",
+    "univ-lab1-get-course",
+    "univ-lab1-update-course",
+    "univ-lab1-delete-course",
+    "univ-lab1-get-all-authors"
+  ]
+}
+
+# Прикріплюємо базову політику виконання (логи) до кожної ролі
+resource "aws_iam_role_policy_attachment" "basic_exec_to_all" {
+  for_each   = toset(local.lambda_roles)
+  role       = each.value
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}

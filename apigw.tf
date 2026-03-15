@@ -23,7 +23,7 @@ resource "aws_api_gateway_resource" "course_id" {
   path_part   = "{id}"
 }
 
-# 3. Інтеграції для ВСІХ 6 функцій (без хардкоду URI)
+# 3. Інтеграції для ВСІХ 6 функцій 
 # Використовуємо locals для зручності управління методами
 locals {
   lambda_integrations = {
@@ -67,7 +67,7 @@ module "cors" {
   api_resource_id = each.value
 }
 
-# 5. Дозволи для Lambda (без хардкоду імен функцій) 
+# 5. Дозволи для Lambda 
 resource "aws_lambda_permission" "apigw_lambda" {
   for_each      = local.lambda_integrations
   statement_id  = "AllowAPIGatewayInvoke-${each.key}"
@@ -93,7 +93,7 @@ resource "aws_api_gateway_stage" "v1" {
   stage_name    = "v1"
 }
 
-# Вивід URL вашого API
+# Вивід URL  API
 output "base_url" {
   value = "${aws_api_gateway_stage.v1.invoke_url}/"
 }

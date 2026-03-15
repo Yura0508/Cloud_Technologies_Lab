@@ -102,7 +102,7 @@ module "delete_course_iam" {
   source             = "./modules/iam"
   name               = "delete-course"
   dynamodb_table_arn = module.courses_table.table_arn
-  dynamodb_actions   = ["dynamodb:DeleteItem"]
+  dynamodb_actions   = ["dynamodb:DeleteItem", "dynamodb:GetItem"] 
   context            = module.labels.context
 }
 
